@@ -3,6 +3,8 @@
 #include <cmath>
 #include <ccomplex>
 using namespace std;
+#include <bits/stdc++.h>
+using namespace std;
 
 void constructutil1(int **a,int rlow,int rhigh,int clow,int chigh,vector<vector<int> >&seg,int ridx,int cidx,int n)
 {
@@ -46,7 +48,7 @@ void constructutil(int **a,int rlow,int rhigh,int clow,int chigh,vector<vector<i
 	return;
 }
 
-void construct(int **a,int m,int n)
+pair<vector<vector<int> >,pair<int,int>> construct(int **a,int m,int n)
 {
 	int x=ceil(log2(m));
 	int rows=2*pow(2,x)-1;
@@ -63,15 +65,61 @@ void construct(int **a,int m,int n)
     	cout<<"\n";
     }
     pair<int,int> c=make_pair(rows,cols);
-    pair<vector<vector<int> >,pair<int,int>> masturbation=make_pair(seg,c);
-    return masturbation;
+    pair<vector<vector<int> >,pair<int,int> > mastur=make_pair(seg,c);
+    return mastur;
+}
+
+void print1(vector<vector<int> > seg,int row,int col,int **a,int rlow,int rhigh,int clow,int chigh,int ridx,int cidx)
+{
+	if(clow==chigh)
+	{
+		cout<<"equal"<<"\n";
+		if(rlow==rhigh)
+		{
+			cout<<"ridx "<<ridx<<"cidx "<<cidx<<"\n";
+			cout<<"sum from rlow "<<rlow<<" rhigh "<<rhigh<<" clow "<<clow<<" chigh "<<chigh<<" "<<seg[ridx][cidx]<<"\n";
+			return;
+		}
+		return;
+	}
+	if(rlow!=rhigh)
+	{
+		for(int i=0;i<col;i++)
+		{
+			cout<<"sum from rlow "<<rlow<<" rhigh "<<rhigh<<" clow "<<clow<<" chigh "<<chigh<<" "<<seg[ridx][cidx]<<"\n";
+		}
+		return;
+	}
+	int mid=clow+(chigh-clow)>>2;
+	print1(seg,row,col,a,rlow,rhigh,clow,mid,ridx,2*cidx+1);
+	print1(seg,row,col,a,rlow,rhigh,mid+1,chigh,ridx,2*cidx+2);
+	cout<<"sum from rlow "<<rlow<<" rhigh "<<rhigh<<" clow "<<clow<<" chigh "<<chigh<<" "<<seg[ridx][cidx]<<"\n";
+	return;
+}
+
+void print(vector<vector<int> >seg,int row,int col,int **a,int rlow,int rhigh,int clow,int chigh,int ridx,int cidx)
+{
+	if(rlow==rhigh)
+	{
+		print1(seg,row,col,a,rlow,rhigh,clow,chigh,ridx,cidx);
+		return;
+	}
+	int mid=rlow+(rhigh-rlow)>>2;
+	print(seg,row,col,a,rlow,mid,clow,chigh,2*ridx+1,cidx);
+	print(seg,row,col,a,mid+1,rhigh,clow,chigh,2*ridx+2,cidx);
+	print1(seg,row,col,a,rlow,rhigh,clow,chigh,ridx,cidx);
+	return;
 }
 
 int main()
 {
-	/*int a[][4]={{1,2,3,4},{5,6,7,8},{9,10,11,12}};
-	cout<<"rows "<<sizeof(a)/sizeof(a[0])<<"\n";
-	cout<<"cols "<<sizeof(a[0])/sizeof(a[0][0])<<"\n";*/
+	/*
+	*
+	*code for 2d segment tree
+	*a is the matrix to work
+	*m is row n is col
+	*segment is the 2d segment tree
+	*/
 	int **a,m,n;
 	cout<<"rows "<<"\n";
 	cin>>m;
@@ -92,14 +140,15 @@ int main()
 		}
 	}
 
-	pair<vector<vector<int> >,pair<int,int> > sex=construct(a,m,n);
-	for(int i=0;i<pair.second.first;i++)
+	pair<vector<vector<int> >,pair<int,int> > segment=construct(a,m,n);
+	for(int i=0;i<segment.second.first;i++)
 	{
-		for(int j=0;j<pair.second.second;j++)
+		for(int j=0;j<segment.second.second;j++)
 		{
-			cout<<pair.first[i][j]<<" ";
+			cout<<segment.first[i][j]<<" ";
 		}
 		cout<<"\n";
 	}
+	print(segment.first,segment.second.first,segment.second.second,a,0,m-1,0,n-1,0,0);
 	return 0;
 }
